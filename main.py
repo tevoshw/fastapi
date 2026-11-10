@@ -55,3 +55,52 @@ def chat(input: str):
     return {
         'messages': messages
     }
+
+
+import asyncio
+
+@app.get('/async')
+async def assync():
+    await asyncio.sleep(4)
+    return 'demorou 4s para isso retornar'
+
+from fastapi import FastAPI, UploadFile, File
+from fastapi.responses import HTMLResponse
+
+
+@app.get("/predict", response_class=HTMLResponse)
+async def predict_page():
+
+    return """
+    <html>
+        <body>
+            <h1>Image Classification</h1>
+
+            <form action="/predict" method="POST"
+                  enctype="multipart/form-data">
+
+                <input type="file" name="file" accept="image/*" required>
+
+                <button type="submit">
+                    Classificar imagem
+                </button>
+
+            </form>
+        </body>
+    </html>
+    """
+
+
+@app.post("/predict")
+async def predict(file: UploadFile = File(...)):
+
+    image_bytes = await file.read()
+
+    # Aqui você executará seu modelo de ML/DL.
+
+    prediction = "Dog"
+
+    return {
+        "filename": file.filename,
+        "prediction": prediction
+    }
